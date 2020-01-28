@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ((i = 0 ; i < 5 ; i++)); do
-  ./target/release/core_loop_test_client -u User$i &
+for ((i = 0 ; i < 8 ; i++)); do
+  ./target/release/client &
 done
 

@@ -12,19 +12,11 @@ netcode = {version = "*", path = "../netcode"}
 
 tokio = { version = "0.2.0", features = ["full"] }
 tokio-util = { version = "0.2.0", features = ["full"] }
-bytes = "0.5"
+
 futures = "0.3.0"
-number_prefix = "0.3.0"
 
 serde = "1.0.104"
 bincode = "1.2.1"
 
-
-specs = { version = "0.15.0", features = ["specs-derive"] }
-
 log = "0.4.8"
 simple_logger = "1.4.0"
-
-prometheus = "0.7"
-
-lazy_static = "1.4.0"
