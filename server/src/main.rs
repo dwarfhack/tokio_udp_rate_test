@@ -14,7 +14,6 @@ use tokio::runtime::Runtime;
 
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::*;
-use futures::SinkExt;
 use futures::future::join_all;
 
 use log::{info, warn};
@@ -51,7 +50,6 @@ async fn rcv_pass(opt: Opt,mut tx: Sender<MovementUpdate>,) {
 
     let mut msg_ctr = 0;
     let mut total_msg_ctr = 0;
-    let mut bytes_ctr = 0;
 
     let mut start_time = SystemTime::now();
 
