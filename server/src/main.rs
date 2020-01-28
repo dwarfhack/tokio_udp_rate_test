@@ -2,7 +2,6 @@
 
 use structopt::StructOpt;
 
-use std::error::Error;
 use tokio;
 use tokio::net::UdpSocket;
 
@@ -29,7 +28,7 @@ pub fn main(){
 
     let mut rt = Runtime::new().unwrap();
 
-    let (mut tx,rx) = mpsc::channel(100);
+    let (tx,rx) = mpsc::channel(100);
 
     let handler = rt.spawn(rcv_pass_handler(opt.clone(),rx));
     let receiver = rt.spawn(rcv_pass(opt.clone(),tx));
@@ -54,7 +53,7 @@ async fn rcv_pass(opt: Opt,mut tx: Sender<MovementUpdate>,) {
     let mut start_time = SystemTime::now();
 
     loop{
-        let res = socket.recv_from(&mut buf).await.unwrap();
+        let _res = socket.recv_from(&mut buf).await.unwrap();
 
         // reset start time when we start to receive messages
         if msg_ctr == 0 {
@@ -78,12 +77,12 @@ async fn rcv_pass(opt: Opt,mut tx: Sender<MovementUpdate>,) {
 
 }
 
-async fn rcv_pass_handler(opt: Opt,mut rx: Receiver<MovementUpdate>) {
+async fn rcv_pass_handler(_opt: Opt,mut rx: Receiver<MovementUpdate>) {
     let mut msg_ctr = 0;
     let mut total_msg_ctr = 0;
     let mut start_time = SystemTime::now();
 
-    while let Some(packet) = rx.recv().await {
+    while let Some(_packet) = rx.recv().await {
         msg_ctr+=1;
         total_msg_ctr+=1;
 
@@ -95,34 +94,4 @@ async fn rcv_pass_handler(opt: Opt,mut rx: Receiver<MovementUpdate>) {
         }
     }
 
-}
-
-async fn rcv_drop(opt: Opt) -> Result<(), Box<dyn Error>> {
-
-    let mut socket = UdpSocket::bind(&opt.bind_addr).await?;
-    println!("Listening on: {}", socket.local_addr()?);
-
-    let mut buf= vec![0; 512];
-    let mut msg_ctr = 0;
-    let mut start_time = SystemTime::now();
-
-    loop{
-        let res = socket.recv_from(&mut buf).await?;
-
-    // reset start time when we start to receive messages to rule out client startup delay
-    if msg_ctr == 0 {
-            start_time = SystemTime::now();
-        }
-
-        msg_ctr+=1;
-        if msg_ctr%1_000_000==1_000_000-1 {
-            let timediff = start_time.elapsed().unwrap();
-            let packet_rate = (1_000_000.0/timediff.as_millis()as f32)*1_000f32;
-
-            info!("Current packet rate {}Pps",packet_rate);
-
-            start_time = SystemTime::now();
-        }
-    }
-    Ok(())
 }
